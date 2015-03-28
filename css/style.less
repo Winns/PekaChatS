@@ -1,0 +1,353 @@
+/* Variables */
+@f-main: 'PT Sans', sans-serif;
+@f-icon: 'FontAwesome';
+
+@c-main: #406295;
+
+@c-text: #99999a;
+@c-bg: #18181f;
+@c-link: #C57C08;
+@c-border: #23232A;
+
+@c-yellow: #fe0;
+
+/* Classes */
+.class-clear() {
+	&:after {
+		content: "";
+		display: block;
+		clear: both;
+	}
+}
+
+.class-vicon() {
+	display: inline-block;
+	line-height: 1;
+	text-align: center;
+	font: normal normal normal 14px/1 @f-icon;
+	font-size: inherit;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	transform: translate(0, 0);
+}
+
+.class-ani(@time: 0.25s) {
+	-webkit-transition: all @time;
+	transition: all @time;
+	
+	&:hover { 
+		-webkit-transition: all @time;
+		transition: all @time;
+	}
+}
+
+/* Default tags */
+body {
+	font-family: @f-main;
+	font-size: 13px;
+	
+	color: @c-text;
+	background: @c-bg;
+}
+
+a { 
+	-webkit-transition: color 0.3s;
+	transition: color 0.3s;
+	
+	text-decoration: none; 
+	color: @c-link;
+	
+	&:hover { 
+		text-decoration: none;
+		color: @c-text;
+	}
+}
+
+iframe, #pekachat {
+	display: block;
+	position: relative;
+	float: left;
+	width: 250px; height: 500px;
+	border: 1px solid #7797BE;
+}
+
+//iframe { opacity: 0; }
+
+/* Globar elements */
+.g-vicon { .class-vicon; }
+
+.g-vicon-gg:before { content: '\f21c'; color: #52709C; }
+.g-vicon-sc2tv:before { content: '\f188'; color: #90BE1E; }
+.g-vicon-twitch:before { content: '\f1e8'; color: #7550BA; }
+.g-vicon-cybergame:before { content: '\f11b'; color: #9DC161; }
+
+
+.g-button {
+	-webkit-transition: background 0.3s, border-bottom-color 0.3s;
+	transition: background 0.3s, border-bottom-color 0.3s;
+	
+	display: inline-block;
+	padding: 0 10px;
+	height: 24px;
+	line-height: 23px;
+	
+	cursor: pointer;
+
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	border-bottom: 2px solid darken(@c-main, 15%);
+	border-radius: 2px;
+	
+	font-size: 11px;
+	
+	color: #fff;
+	background: @c-main;
+	
+	&:active { 
+		border-bottom-color: rgba(0,0,0,0);
+		background: darken(@c-main, 15%) !important; 
+	}
+	&:hover { background: lighten(@c-main, 10%); }
+}
+
+/* Pekachat */
+#pekachat {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 400px;
+	overflow: hidden;
+
+	.peka-topbar {
+		z-index: 3;
+		
+		display: flex;
+		height: 30px;
+		line-height: 30px;
+		
+		border-bottom: 1px solid @c-border;
+		background: @c-bg;
+
+		.btn-toggle-menu {
+			.class-ani;
+			
+			display: block;
+			width: 30px; height: 30px;
+			
+			line-height: 30px;
+			text-align: center;
+			
+			cursor: pointer;
+			
+			&:hover {
+				color: #fff;
+			}
+		}
+			.btn-toggle-menu.active:before {
+				content: '\f00d';
+			}
+
+		.peka-statusbar {
+			.class-clear;
+			
+			display: block;
+			flex: 100%;
+			height: 100%;
+			
+			text-align: left;
+			
+			> li { 
+				display: block;
+				float: right;
+				line-height: 30px;
+				padding: 0 3px;
+			}
+		}
+	}
+	
+	.peka-menu {
+		.class-clear;
+		
+		-webkit-transition: all 0.3s;
+		-o-transition: all 0.3s;
+		transition: all 0.3s;
+		
+		z-index: 2;
+
+		position: absolute;
+		bottom: 100%;
+		padding: 40px 0 30px 0;
+		height: 100%; width: 100%;
+
+		background: @c-bg;
+		
+		&.active { bottom: 0; }
+	}
+	
+	.peka-menu li {
+		-webkit-transition: color 0.3s;
+		transition: color 0.3s;
+	
+		display: block;
+		float: left;
+		padding: 4px 8px;
+		width: 90px; height: 90px;
+
+		line-height: normal;
+		text-align: center;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		
+		cursor: pointer;
+		
+		&:hover { color: #fff; }
+		
+		i {
+			display: block;
+			margin-bottom: 4px;
+			height: 42px;
+			line-height: 42px;
+			font-size: 20px;
+			
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+	}
+	
+	.peka-dialog {
+		-webkit-transition: opacity 0.3s;
+		transition: opacity 0.3s;
+		
+		z-index: 2;
+
+		opacity: 0;
+		position: absolute;
+		bottom: 100%;
+		padding: 30px 0;
+		height: 100%; width: 100%;
+
+		background: @c-bg;
+
+		&.active { bottom: 0; opacity: 1; }
+		
+		.peka-dialog-top {
+			position: relative;
+			height: 30px;
+			line-height: 30px;
+			
+			border-bottom: 1px solid @c-border;
+			
+			color: @c-bg;
+			background: @c-text;
+			
+			.title {
+				padding: 0 6px;
+			}
+			
+			i {
+				.class-ani;
+				
+				position: absolute;
+				top: 0; right: 0;
+				width: 30px; height: 30px;
+				line-height: 30px;
+				text-align: center;
+				cursor: pointer;
+			}
+		}
+		
+		.peka-dialog-content {
+			position: relative;
+			
+			p { padding: 8px; }
+		}
+	}
+	
+	@keyframes animation-message {
+		0% {
+			opacity: 0;
+		}
+		
+		100% {
+			opacity: 1;
+		}
+	}
+
+
+	.peka-messagesbar {
+		z-index: 1;
+		
+		flex: 100%;
+		height: 100%;
+		overflow: hidden;
+		
+		background: darken(@c-bg, 3%);
+			
+		.peka-messages-list {
+			-webkit-transition: padding 0.15s;
+			transition: padding 0.15s;
+			
+			box-sizing: content-box;
+			padding-right: 20px;
+			width: 100%; height: 100%;
+
+			overflow-y: scroll;
+			overflow-x: hidden;
+			
+			word-wrap: break-word;
+			
+			.peka-message {
+				animation-name: animation-message;
+				animation-duration: 1.2s;
+		
+				padding: 4px;
+				
+				.peka-source {
+					font-weight: normal;
+					color: #f63;
+					
+					i {
+						vertical-align: middle;
+						margin-right: 4px;
+						width: 20px;
+						height: 16px;
+						font-size: 14px;
+						line-height: 14px;
+					}
+				}
+				.peka-author {
+					padding-right: 4px;
+					font-weight: bold;
+					color: #ccc;
+				}
+				.peka-text {
+					line-height: 130%;
+					img { height: 30px; }
+				}
+			}
+			
+			.peka-system-message {
+				padding: 8px 4px;
+				text-align: center;
+				color: @c-yellow;
+			}
+		}
+		
+		.peka-messages-list:hover {
+			//padding-right: 0;
+		}
+	}
+	
+	
+	.peka-bottombar {
+		z-index: 3;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+		
+		border-top: 1px solid @c-border;
+	}
+}

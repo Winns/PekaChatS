@@ -1,0 +1,295 @@
+/* Variables */
+/* Classes */
+/* Default tags */
+body {
+  font-family: 'PT Sans', sans-serif;
+  font-size: 13px;
+  color: #99999a;
+  background: #18181f;
+}
+a {
+  -webkit-transition: color 0.3s;
+  transition: color 0.3s;
+  text-decoration: none;
+  color: #c57c08;
+}
+a:hover {
+  text-decoration: none;
+  color: #99999a;
+}
+iframe,
+#pekachat {
+  display: block;
+  position: relative;
+  float: left;
+  width: 250px;
+  height: 500px;
+  border: 1px solid #7797BE;
+}
+/* Globar elements */
+.g-vicon {
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  font: normal normal normal 14px/1 'FontAwesome';
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+}
+.g-vicon-gg:before {
+  content: '\f21c';
+  color: #52709C;
+}
+.g-vicon-sc2tv:before {
+  content: '\f188';
+  color: #90BE1E;
+}
+.g-vicon-twitch:before {
+  content: '\f1e8';
+  color: #7550BA;
+}
+.g-vicon-cybergame:before {
+  content: '\f11b';
+  color: #9DC161;
+}
+.g-button {
+  -webkit-transition: background 0.3s, border-bottom-color 0.3s;
+  transition: background 0.3s, border-bottom-color 0.3s;
+  display: inline-block;
+  padding: 0 10px;
+  height: 24px;
+  line-height: 23px;
+  cursor: pointer;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 2px solid #293f5f;
+  border-radius: 2px;
+  font-size: 11px;
+  color: #fff;
+  background: #406295;
+}
+.g-button:active {
+  border-bottom-color: rgba(0, 0, 0, 0);
+  background: #293f5f !important;
+}
+.g-button:hover {
+  background: #537ab5;
+}
+/* Pekachat */
+#pekachat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  overflow: hidden;
+}
+#pekachat .peka-topbar {
+  z-index: 3;
+  display: flex;
+  height: 30px;
+  line-height: 30px;
+  border-bottom: 1px solid #23232a;
+  background: #18181f;
+}
+#pekachat .peka-topbar .btn-toggle-menu {
+  -webkit-transition: all 0.25s;
+  transition: all 0.25s;
+  display: block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  cursor: pointer;
+}
+#pekachat .peka-topbar .btn-toggle-menu:hover {
+  -webkit-transition: all 0.25s;
+  transition: all 0.25s;
+}
+#pekachat .peka-topbar .btn-toggle-menu:hover {
+  color: #fff;
+}
+#pekachat .peka-topbar .btn-toggle-menu.active:before {
+  content: '\f00d';
+}
+#pekachat .peka-topbar .peka-statusbar {
+  display: block;
+  flex: 100%;
+  height: 100%;
+  text-align: left;
+}
+#pekachat .peka-topbar .peka-statusbar:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#pekachat .peka-topbar .peka-statusbar > li {
+  display: block;
+  float: right;
+  line-height: 30px;
+  padding: 0 3px;
+}
+#pekachat .peka-menu {
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  z-index: 2;
+  position: absolute;
+  bottom: 100%;
+  padding: 40px 0 30px 0;
+  height: 100%;
+  width: 100%;
+  background: #18181f;
+}
+#pekachat .peka-menu:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#pekachat .peka-menu.active {
+  bottom: 0;
+}
+#pekachat .peka-menu li {
+  -webkit-transition: color 0.3s;
+  transition: color 0.3s;
+  display: block;
+  float: left;
+  padding: 4px 8px;
+  width: 90px;
+  height: 90px;
+  line-height: normal;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+}
+#pekachat .peka-menu li:hover {
+  color: #fff;
+}
+#pekachat .peka-menu li i {
+  display: block;
+  margin-bottom: 4px;
+  height: 42px;
+  line-height: 42px;
+  font-size: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#pekachat .peka-dialog {
+  -webkit-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+  z-index: 2;
+  opacity: 0;
+  position: absolute;
+  bottom: 100%;
+  padding: 30px 0;
+  height: 100%;
+  width: 100%;
+  background: #18181f;
+}
+#pekachat .peka-dialog.active {
+  bottom: 0;
+  opacity: 1;
+}
+#pekachat .peka-dialog .peka-dialog-top {
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+  border-bottom: 1px solid #23232a;
+  color: #18181f;
+  background: #99999a;
+}
+#pekachat .peka-dialog .peka-dialog-top .title {
+  padding: 0 6px;
+}
+#pekachat .peka-dialog .peka-dialog-top i {
+  -webkit-transition: all 0.25s;
+  transition: all 0.25s;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  cursor: pointer;
+}
+#pekachat .peka-dialog .peka-dialog-top i:hover {
+  -webkit-transition: all 0.25s;
+  transition: all 0.25s;
+}
+#pekachat .peka-dialog .peka-dialog-content {
+  position: relative;
+}
+#pekachat .peka-dialog .peka-dialog-content p {
+  padding: 8px;
+}
+@keyframes animation-message {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+#pekachat .peka-messagesbar {
+  z-index: 1;
+  flex: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #111116;
+}
+#pekachat .peka-messagesbar .peka-messages-list {
+  -webkit-transition: padding 0.15s;
+  transition: padding 0.15s;
+  box-sizing: content-box;
+  padding-right: 20px;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  word-wrap: break-word;
+}
+#pekachat .peka-messagesbar .peka-messages-list .peka-message {
+  animation-name: animation-message;
+  animation-duration: 1.2s;
+  padding: 4px;
+}
+#pekachat .peka-messagesbar .peka-messages-list .peka-message .peka-source {
+  font-weight: normal;
+  color: #f63;
+}
+#pekachat .peka-messagesbar .peka-messages-list .peka-message .peka-source i {
+  vertical-align: middle;
+  margin-right: 4px;
+  width: 20px;
+  height: 16px;
+  font-size: 14px;
+  line-height: 14px;
+}
+#pekachat .peka-messagesbar .peka-messages-list .peka-message .peka-author {
+  padding-right: 4px;
+  font-weight: bold;
+  color: #ccc;
+}
+#pekachat .peka-messagesbar .peka-messages-list .peka-message .peka-text {
+  line-height: 130%;
+}
+#pekachat .peka-messagesbar .peka-messages-list .peka-message .peka-text img {
+  height: 30px;
+}
+#pekachat .peka-messagesbar .peka-messages-list .peka-system-message {
+  padding: 8px 4px;
+  text-align: center;
+  color: #ffee00;
+}
+#pekachat .peka-bottombar {
+  z-index: 3;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-top: 1px solid #23232a;
+}
