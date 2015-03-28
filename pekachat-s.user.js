@@ -2,14 +2,16 @@
 // @name        PekaChat S
 // @description Агрегатор чатов в один поток.
 // @author      Winns
-// @version     1.0
+// @version     0.0.1
 
-// @include     http://chat.sc2tv.ru*
-// @include     http://goodgame.ru/chat2/*
-// @include     http://www.twitch.tv/*/chat
 // @include     file:///*/pekachat_s/index.html
-// @include     http://*runpekachat
+// @include     http://chat.sc2tv.ru/*pekachat*
+// @include     http://goodgame.ru/chat2/*pekachat*
+// @include     http://www.twitch.tv/*/chat*pekachat*
+// @include     http://cybergame.tv/cgchat.htm*pekachat*
 
+// @exclude     *chatdepot.twitch.tv*
+// @exclude     *api.twitch.tv*
 
 // @grant unsafeWindow
 // @grant GM_addStyle
@@ -29,12 +31,14 @@
 
 // @require     http://code.jquery.com/jquery-2.1.3.min.js
 
-// @require		file:///C:/Users/ps/Desktop/web_prog/code/sc2tv%20userscript%20screens/pekachat_s/storage.core.js?_11sddsd5dsdddsddsd
-// @require		file:///C:/Users/ps/Desktop/web_prog/code/sc2tv%20userscript%20screens/pekachat_s/main.page.js?_111dddsdf5dsfsffsdddsddddsds
+// @require		https://rawgit.com/Winns/PekaChatS/master/js/core/helpers.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/js/core/storage.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/js/core/ui.core.js
 
-// @require		file:///C:/Users/ps/Desktop/web_prog/code/sc2tv%20userscript%20screens/pekachat_s/gg.page.js?_111sfd5dddsdd
-// @require		file:///C:/Users/ps/Desktop/web_prog/code/sc2tv%20userscript%20screens/pekachat_s/sc2tv.page.js?_111dfd5dddsdd
-// @require		file:///C:/Users/ps/Desktop/web_prog/code/sc2tv%20userscript%20screens/pekachat_s/twitch.page.js?_111sfd5dddsfd
+// @require		https://rawgit.com/Winns/PekaChatS/master/js/core/gg.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/js/core/sc2tv.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/js/core/twitch.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/js/core/cybergame.core.js
 // ==/UserScript==
 
 /*
@@ -60,122 +64,120 @@
 		msg:		message,
 		source: 	message source (website, "gg", "sc2tv")
 	}
+
+	TODO:
+		Оптимизировать рендер
 	
-	навзвания - BarrensChat, PekaChat S
+	Идеи для модулей:
+		[ok] Голосовалка
+		Прокачка пользователей, чатика
+		[ok] ПекаСчётчик
+		[ok] Кол-во зрителей
+		[ok] Кол-во сообщений
+		Подсвечивать сообщения определённых юзеров
+		[ok] Trivia bot
+		[ok] Статистика игр (вов дота танки лол и т.д.)
+		[ok] Спидометр, скорость чатика
+		нюка в чатик, гуф сообщений
+		[ok] модуль статистики в который другии модули могут отправлять свою статистику
 */
 
-// Check host
-var enableScript = (function checkHost() {
-	var HOST 		= window.location.host,
-		modules 	= unsafeWindow.pekaChatModules;
-		
-	if (HOST === '') return true;
-	
-	for (var i=0, m; i < modules.length; i++) {
-		m = modules[i];
-		
-		if (m.hasOwnProperty( 'host' )) {
-			if (Array.isArray( m.host )) {
-				for (var j=0; j < m.host.length; j++) {
-					if (m.host[j] === HOST) return true;
-				}
-			} else {
-				if (m.host === HOST) return true;
+var uw = unsafeWindow;
+this.$ = this.jQuery = jQuery.noConflict(true);
+
+console.log( 'host: ('+ window.location.host +')' );
+
+$(function () {
+
+	var ui = new UI;
+
+	var eventBus = {
+		pool: [],
+		on: function( event, f ) {
+			this.pool.push({ event: event, f: f });
+		},
+		trigger: function( event, data ) {
+			var o, data = data || null;
+
+			for (var i=0; i < this.pool.length; i++) {
+				o = this.pool[i];
+				if (o.event == event) o.f( data );
 			}
 		}
-	}
+	};
 	
-	return false;
-})();
-
-if (enableScript) {
-
-	this.$ = this.jQuery = jQuery.noConflict(true);
-
-	// Helpers
-	function getPageObject( name ) {
-		var r = false;
+	var config = {
+		HOST 				: window.location.host,
 		
-		if (unsafeWindow.hasOwnProperty( name )) {
-			r = unsafeWindow[ name ];
-
-			// If browser support .toSource() method (if firefox)
-			if (Object.prototype.hasOwnProperty( 'toSource' )) {
-				var id = Math.random().toString(36).substr(2, 9);
-				
-				GM_setValue( id, r.toSource() );
-				r = eval(GM_getValue( id ));
-				GM_setValue( id, '' );
-			}
-		}
+		URL_SC2TV_CHAT		: 'chat.sc2tv.ru',
+		URL_GG_CHAT			: 'goodgame.ru',
+		URL_TWITCH_CHAT		: 'www.twitch.tv',
+		URL_CYBERGAME_CHAT	: 'cybergame.tv',
 		
-		return r;
-	}
-
-	$(function () {
-
-		var pekaChat = new (function() {
-			var self = this;
-			
-			
-		});
+		UPDATE_INTERVAL		: 5000,
+		MSG_TO_PARSE		: 50, // per iFrame
+		MSG_LIMIT			: 150,
+		SCROLL_SPEED		: 500,
 		
-		/*
-		var config = {
-			HOST 				: window.location.host,
-			URL_SC2TV_CHAT		: 'chat.sc2tv.ru',
-			URL_GG_CHAT			: 'goodgame.ru',
-			URL_TWITCH_CHAT		: 'www.twitch.tv',
-			
-			UPDATE_INTERVAL		: 5000,
-			MSG_TO_PARSE		: 12, // per iFrame
-			MSG_LIMIT			: 50, // > MSG_TO_PARSE * number of iFrames + 1
-			SCROLL_SPEED		: 500,
-			
-			CHAT_LIST			: ['sc2tv','gg','twitch']
-		};
-		
-		var eventBus = {
-			pool: [],
-			on: function( event, f ) {
-				this.pool.push({ event: event, f: f });
-			},
-			onTrigger: function( event, data ) {
-				var o, data = data || null;
+		chatList			: ['sc2tv', 'gg', 'twitch', 'cybergame'],
+		modules				: uw.hasOwnProperty( 'pekaChatModules' ) ? uw.pekaChatModules : [],
+	};
+	
+	var storage = new Storage( config, eventBus );
 
-				for (var i=0; i < this.pool.length; i++) {
-					o = this.pool[i];
-					if (o.event == event) o.f( data );
-				}
-			}
-		};
-		
-		var storage = new Storage( config );
+	var pekaChat = new (function() {
+		var self = this;
 
-		(function handleHost() {
-			uw.console.log( 'HOST: ('+ config.HOST +')' );
+		this.config = null;
 
+		this.initHost = function() {
 			switch (config.HOST) {
 				case config.URL_SC2TV_CHAT:
-					new PageSC2TV( config, storage );
+					new ChatSC2TV( config, storage );
 					break;
 					
 				case config.URL_GG_CHAT:
-					new PageGG( config, storage );
+					new ChatGG( config, storage );
 					break;
 					
 				case config.URL_TWITCH_CHAT:
-					new PageTwitch( config, storage );
+					new ChatTwitch( config, storage );
+					break;
+					
+				case config.URL_CYBERGAME_CHAT:
+					new ChatCyberGame( config, storage );
 					break;
 					
 				case '':
-					new App( config, storage, uw.userModules );
-					storage.startObserver();
+					if (window.self === window.top) {
+						storage.clear();
+						storage.startObserver();
+					}
 					break;
 			}
-			
-		})();
-		*/
-	});
+		};
+		
+		this.initModules = function() {
+			for (var i=0, item, module; i < config.modules.length; i++) {
+				item = config.modules[i];
 
-}
+				module = clonePageObject( item.name );
+
+				if (module !== false) {
+					module = new module( item.config, config, storage, eventBus, ui );
+					module.init();	
+					
+					console.log( 'Module '+ item.name +' initialized' );
+				} else {
+					console.log( 'Error: Module '+ item.name +' not exist' );
+				}
+			}
+		};
+
+		this.init = function() {
+			this.initHost();
+			this.initModules();
+		};
+		this.init();
+	});
+});
