@@ -31,14 +31,14 @@
 
 // @require     http://code.jquery.com/jquery-2.1.3.min.js
 
-// @require		https://rawgit.com/Winns/PekaChatS/PekaChatS/master/js/core/helpers.core.js
-// @require		https://rawgit.com/Winns/PekaChatS/PekaChatS/master/js/core/storage.core.js
-// @require		https://rawgit.com/Winns/PekaChatS/PekaChatS/master/js/core/ui.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/PekaChatS/js/core/helpers.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/PekaChatS/js/core/storage.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/PekaChatS/js/core/ui.core.js
 
-// @require		https://rawgit.com/Winns/PekaChatS/PekaChatS/master/js/core/gg.core.js
-// @require		https://rawgit.com/Winns/PekaChatS/PekaChatS/master/js/core/sc2tv.core.js
-// @require		https://rawgit.com/Winns/PekaChatS/PekaChatS/master/js/core/twitch.core.js
-// @require		https://rawgit.com/Winns/PekaChatS/PekaChatS/master/js/core/cybergame.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/PekaChatS/js/core/gg.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/PekaChatS/js/core/sc2tv.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/PekaChatS/js/core/twitch.core.js
+// @require		https://rawgit.com/Winns/PekaChatS/master/PekaChatS/js/core/cybergame.core.js
 // ==/UserScript==
 
 /*
