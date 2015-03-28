@@ -4,7 +4,7 @@
 // @author      Winns
 // @version     0.0.1
 
-// @include     file:///*/pekachat_s/index.html
+// @include     file:///*/PekaChatS/index.html
 // @include     http://chat.sc2tv.ru/*pekachat*
 // @include     http://goodgame.ru/chat2/*pekachat*
 // @include     http://www.twitch.tv/*/chat*pekachat*
