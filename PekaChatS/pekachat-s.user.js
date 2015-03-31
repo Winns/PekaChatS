@@ -1,4 +1,4 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name        PekaChat S
 // @description Агрегатор чатов в один поток.
 // @author      Winns
@@ -48,14 +48,6 @@
 		enable userscript access to local files
 		http://stackoverflow.com/questions/9931115/run-greasemonkey-on-html-files-located-on-the-local-filesystem
 
-	2) 
-		set URLs
-		// @include     http://chat.sc2tv.ru/index.htm?channelId=157255
-		// @include     http://goodgame.ru/chat/Pomi/217/
-		// @include     file:///C:/Users/ps/Desktop/iframes/iframes-test-page.html
-		// @match 		http://chat.sc2tv.ru/index.htm?channelId=157255
-		// @match 		http://goodgame.ru/chat/Pomi/217/
-		// @match 		file:///C:/Users/ps/Desktop/iframes/iframes-test-page.html
 
 	Message format
 	{
@@ -119,8 +111,8 @@ $(function () {
 		MSG_LIMIT			: 150,
 		SCROLL_SPEED		: 500,
 		
-		chatList			: ['sc2tv', 'gg', 'twitch', 'cybergame'],
-		modules				: uw.hasOwnProperty( 'pekaChatModules' ) ? uw.pekaChatModules : [],
+		chatParsers			: ['sc2tv', 'gg', 'twitch', 'cybergame'],
+		modules				: uw.hasOwnProperty( 'pekaChatSetup' ) ? uw.pekaChatSetup.modules : [],
 	};
 	
 	var storage = new Storage( config, eventBus );
