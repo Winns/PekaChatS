@@ -8,20 +8,39 @@ var ChatSC2TV = function ( config, storage ) {
 		msgs: '.mess',
 	};
 	
-	this.getSmilePath = function( v ) {
-		return 'http://chat.sc2tv.ru' + v;
-	};
-	
-	this.getNewMessages = function () {
-		//var $temp = this.el.$chat.find( this.el.msgs );
-		//if (! $temp.length) return [];
+	this.smiles = unsafeWindow.smiles;
+
+	/*
+	this.handleMessages = function ( $messages ) {
+		this.pm.begin( 'handleMessages' );
 		
 		var arr 		= [],
-			$messages 	= this.el.$chat.find( this.el.msgs ).slice( -config.MSG_TO_PARSE ),
-			$msg		= null,
-			author		= null,
-			msg			= null;
+			msg			= null,
+			$text		= null,
+			$author		= null;
+			
+		$messages = $( $messages );
 		
+		for (var i=0, el, len = $messages.length; i < len; i++) {
+			el 		= $messages[i];
+			$text 	= el.querySelector( '.text' );
+			$author = el.querySelector( '.nick' );
+
+			if ($author !== null && $text !== null) {
+				msg = {
+					id: 	this.name +'-'+ el.className,
+					author: $author.innerHTML,
+					text: 	$text.innerHTML,
+					source: this.name,
+					type: 	1
+				};
+			
+				if (! storage.isMessageExist( msg )) arr.push( msg );
+			}
+		}
+		
+	
+		/*
 		$messages.each(function() {
 			$msg = $(this).find( '.text, .system_text' ).clone();
 
@@ -38,28 +57,130 @@ var ChatSC2TV = function ( config, storage ) {
 				//id: 	self.name +'-'+ $(this).prop('class').match(/message_([0-9]+)/)[1],
 				id: 	self.name +'-'+ $(this).prop('class'),
 				author: author,
-				msg: 	$msg.html(),
+				text: 	$msg.html(),
 				source: self.name,
 				type: 	1
 			}
 			
 			if (! storage.isMessageExist( msg )) arr.push( msg );
 		});
+		*/
 
-		return arr;
+	/*	
+		this.pm.end( 'handleMessages' );
+		this.pm.print();
+		
+		if (arr.length) 
+			storage.save( this.name, arr);
+	};
+	*/
+	
+	this.msg2html = function( data ) {
+		// BB codes
+		var html = [
+			'<b>$1</b>',
+			'<a href="$1" target="_blank">$2</a>'
+		];
+		
+		var bb = [
+			/\[b\](.*?)\[\/b\]/g,
+			/\[url=(.*?)\](.*?)\[\/url\]/g
+		];
+		
+		for (var i=0; i < bb.length; i++) {
+			data = data.replace( bb[i], html[i] );
+		}
+		
+		// URL's
+		data = data.replace( /\[url\](.*?)\[\/url\]/g, function( match, url ) {
+			var text;
+			if (url.length > 40)
+				text = url.substr(0, 26) +'...'+ url.substr(url.length - 11);
+			else
+				text = url;
+				
+			text = text.replace(/(http[s]?:\/\/)?(www\.)?/i, '');
+			if (text.length < 1) text = 'link';
+				
+			return '<a href="'+ url +'" target="_blank">'+ text +'</a>';
+		});
+
+		// Smiles
+		data = data.replace( /:s(:[-a-z0-9]{2,}:)/gi, function( match, code ) {
+			var smile = code;
+			for (var i=0; i < self.smiles.length; i++) {
+				if (self.smiles[i].code == code) {
+					smile = '<img src="http://chat.sc2tv.ru/img/'+ self.smiles[i].img +'" title="'+ self.smiles[i].code +'">';
+				}
+			}
+			return smile;
+		});
+		
+		return data;
+	};
+	
+	this.oldData = [];
+
+	this.handleMessages = function( data ) {
+		this.pm.begin( 'handleMessages' );
+		
+		var newData = data.messages,
+			isNewMsg,
+			temp,
+			newMessages = [],
+			saveArr = [];
+		
+		// Iterate new data
+		for (var i = newData.length-1; i > -1; i--) {
+			isNewMsg = true;
+			
+			// Iterate old data
+			for (var j=0, len2 = this.oldData.length; j < len2; j++) {
+			
+				// If message already exist
+				if (this.oldData[j].id === newData[i].id) {
+					isNewMsg = false;
+					break;
+				}
+			}
+			
+			if (isNewMsg) {
+				saveArr.push({
+					id: 	newData[i].id,
+					author: newData[i].name,
+					text: 	this.msg2html( newData[i].message ),
+					source: self.name,
+					type: 	1
+				});
+				newMessages.push( newData[i] );
+			}
+		}
+		
+		this.oldData = newData;
+		
+		if (saveArr.length)
+			storage.save( this.name, saveArr);
+
+		this.pm.end( 'handleMessages' );
+		this.pm.print();
 	};
 
 	this.init = function () {
+		this.pm = new PM( $('.chat-channel-name') );
+
 		storage.save( self.name, [{
 			id: 	'SC2TV_INIT',
 			author: 'PekaChat',
-			msg: 	'<i class="fa fa-check"></i> SC2TV.ru инициализирован.',
+			text: 	'<i class="fa fa-check"></i> SC2TV.ru инициализирован.',
 			source: self.name,
 			type: 	0
 		}]);
 		
+		
+		var id = getQueryVariable( 'channelId' );
+
 		setInterval(function(){
-			storage.save( self.name, self.getNewMessages() );
+			$.getJSON( 'http://chat.sc2tv.ru/memfs/channel-'+ id +'.json', self.handleMessages.bind(self) );
 		}, config.UPDATE_INTERVAL);
 	};
 	

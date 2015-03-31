@@ -26,7 +26,7 @@ var ChatCyberGame = function ( config, storage ) {
 			var msg = {
 				id: 	id,
 				author: author,
-				msg: 	$msg.html(),
+				text: 	$msg.html(),
 				source: self.name,
 				type: 	1,
 			};
@@ -41,7 +41,7 @@ var ChatCyberGame = function ( config, storage ) {
 		storage.save( self.name, [{
 			id: 	'CYBERGAME_INIT',
 			author: 'PekaChat',
-			msg: 	'<i class="fa fa-check"></i> CyberGame.tv инициализирован.',
+			text: 	'<i class="fa fa-check"></i> CyberGame.tv инициализирован.',
 			source: self.name,
 			type: 	0
 		}]);

@@ -78,17 +78,19 @@ var PekaCounter = function ( moduleConfig, globalConfig, storage, eventBus, ui )
 	this.init = function() {
 		this.createUI();
 
-		var smiles = ['mini-happy', 'peka'];
+		var smiles = ['mini-happy', 'peka-big'];
 		
 		eventBus.on( 'NEW_MESSAGE', function( data ) {
+
 			for (var i=0; i < data.length; i++) {
 				for (var j=0; j < smiles.length; j++) {
-					if (data[i].msg.indexOf('name="'+ smiles[j] +'"') > -1) {
+					if (data[i].text.indexOf( smiles[j] ) > -1) {
 						self.count++;
 					}
 				}
 			}
-			self.render()
+
+			self.render();
 		});
 	};
 

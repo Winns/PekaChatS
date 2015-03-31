@@ -30,17 +30,19 @@ var Render = function ( moduleConfig, globalConfig, storage, eventBus, ui ) {
 		
 		html += '<li class="peka-message" title="'+ data.id +'">';
 		html += 	'<span class="peka-author"><span class="peka-source"><i class="g-vicon g-vicon-'+ newM[i].source +'"></i></span> '+ data.author +'</span> ';
-		html += 	'<span class="peka-text">'+ data.msg +'</span>';
+		html += 	'<span class="peka-text">'+ data.text +'</span>';
 		html += '</li>';
 		
 		return html;
 	};
 	this.templates.systemMessage = function( data ) {
-		return '<li class="peka-message peka-system-message" title="'+ data.id +'">'+ data.msg +'</li>';
+		return '<li class="peka-message peka-system-message" title="'+ data.id +'">'+ data.text +'</li>';
 	};
 	
 	// Methods
 	this.print = function( newM ) {
+		this.pm.begin( 'print' );
+
 		var html = '';
 
 		for (var i=0; i < newM.length; i++) {
@@ -49,7 +51,7 @@ var Render = function ( moduleConfig, globalConfig, storage, eventBus, ui ) {
 			// Minified for maximum performance
 			switch (newM[i].type) {
 				case 1:
-					html += '<li class="peka-message" title="'+ newM[i].id +'"><span class="peka-author"><span class="peka-source"><i class="g-vicon g-vicon-'+ newM[i].source +'"></i></span> '+ newM[i].author +':</span> <span class="peka-text">'+ newM[i].msg +'</span></li>';
+					html += '<li class="peka-message" title="'+ newM[i].id +'"><span class="peka-author"><span class="peka-source"><i class="g-vicon g-vicon-'+ newM[i].source +'"></i></span> '+ newM[i].author +':</span> <span class="peka-text">'+ newM[i].text +'</span></li>';
 					break;
 				case 0:
 					html += this.templates.systemMessage( newM[i] );
@@ -72,6 +74,9 @@ var Render = function ( moduleConfig, globalConfig, storage, eventBus, ui ) {
 			if ($msgs.length > globalConfig.MSG_LIMIT)
 				$msgs.slice(0, $msgs.length - globalConfig.MSG_LIMIT).remove();
 		});
+		
+		this.pm.end( 'print' );
+		this.pm.print();
 	};
 	
 	this.createUI = function() {
@@ -105,6 +110,8 @@ var Render = function ( moduleConfig, globalConfig, storage, eventBus, ui ) {
 	
 	this.init = function() {
 		this.createUI();
+		
+		this.pm = new PM( $('.peka-bottombar') );
 		
 		eventBus.on( 'NEW_MESSAGE', this.print.bind(this) );
 	};

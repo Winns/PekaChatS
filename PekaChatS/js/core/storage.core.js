@@ -21,7 +21,7 @@ var Storage = function( config, eventBus ) {
 				// Iterate old chat messages
 				for (var j=0; j < oldM[ chat+'_old' ].length; j++) {
 
-					// If message exist
+					// If message already exist
 					if (currentM[chat][i].id === oldM[ chat+'_old' ][j].id) {
 						isNewMsg = false;
 						break;
@@ -36,8 +36,8 @@ var Storage = function( config, eventBus ) {
 		}
 
 		
-		for (var i=0, chat; i < config.chatList.length; i++) {
-			chat = config.chatList[i] + '_old';
+		for (var i=0, chat; i < config.chatParsers.length; i++) {
+			chat = config.chatParsers[i] + '_old';
 			GM_setValue(chat, JSON.stringify( oldM[chat].concat( saveData[chat] ) ));
 		}
 
@@ -75,8 +75,8 @@ var Storage = function( config, eventBus ) {
 	};
 
 	this.clear = function () {
-		for (var i=0, chat; i < config.chatList.length; i++) {
-			chat = config.chatList[i];
+		for (var i=0, chat; i < config.chatParsers.length; i++) {
+			chat = config.chatParsers[i];
 			GM_setValue( chat, 			'[]' );
 			GM_setValue( chat + '_old', '[]' );
 		}
@@ -89,8 +89,8 @@ var Storage = function( config, eventBus ) {
 		
 		if (source == 'all') {
 			
-			for (var i=0, name; i < config.chatList.length; i++) {
-				name = (loadOld == true) ? config.chatList[i] + '_old' : config.chatList[i];
+			for (var i=0, name; i < config.chatParsers.length; i++) {
+				name = (loadOld == true) ? config.chatParsers[i] + '_old' : config.chatParsers[i];
 				r[ name ] = JSON.parse(GM_getValue( name ));
 			}
 		} else {
@@ -104,16 +104,23 @@ var Storage = function( config, eventBus ) {
 	};
 	
 	this.save = function (source, newData) {
+
 		if (newData.length < 1) return;
 
-		var currentData = this.load( source ),
-			total 		= currentData.concat( newData );
+		var data = this.load( source );
+
+		for (var i=0, len = newData.length; i < len; i++) {
+			data.push( newData[i] );
+		}
 		
 		// Delete messages over limit
-		if (total.length > config.MSG_LIMIT)
-			total = total.slice(total.length - config.MSG_LIMIT, total.length);
+		if (data.length > config.MSG_LIMIT)
+			data = data.slice(data.length - config.MSG_LIMIT, data.length);
 
-		GM_setValue( source, JSON.stringify(total) );
+		var json = JSON.stringify(data);
+
+		GM_setValue( source, json );
+		
 	};
 	
 	this.init = function() {};

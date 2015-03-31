@@ -2,60 +2,79 @@ var ChatGG = function ( config, storage ) {
 	var self = this;
 	
 	this.name = 'gg';
-	
-	this.el = {
-		$chat: $( '.content-window' ),
-		msgs: '.message-block:not(.system)',
-	};
-	
+
 	this.getSmilePath = function( $el ) {
-		if ($el.hasClass( 'animated' ))
-			return 'http://goodgame.ru/images/anismiles/'+ $el.attr('name') +'-gif.gif';
+		var isAnimated;
+		
+		if ($el.classList)
+			isAnimated = $el.classList.contains( 'animated' );
 		else
-			return 'http://goodgame.ru/images/smiles/'+ $el.attr('name') +'-big.png';
+			isAnimated = new RegExp('(^| )' + 'animated' + '( |$)', 'gi').test( $el.className );
+
+		if (isAnimated)
+			return 'http://goodgame.ru/images/anismiles/'+ $el.getAttribute('name') +'-gif.gif';
+		else
+			return 'http://goodgame.ru/images/smiles/'+ $el.getAttribute('name') +'-big.png';
 	};
 	
-	this.getNewMessages = function () {
+	this.handleMessages = function ( $messages ) {
+		this.pm.begin( 'handleMessages' );
+		
 		var arr 		= [],
-			$messages 	= this.el.$chat.find( this.el.msgs ).slice( -config.MSG_TO_PARSE ),
-			$msg		= null,
-			msg			= null;
+			msg			= null,
+			$text 		= null,
+			$img		= null,
+			$author		= null;
 
-		$messages.each(function() {
-			$msg = $(this).find( '.message' ).clone();
+		for (var i = 0, el, len = $messages.length; i < len; i++) {
+			el 		= $messages[i];
+			$text 	= el.querySelector( '.message' );
+			$author = el.querySelector( '.nick' );
+			
+			if ($author !== null && $text !== null) {
+				$img = $text.getElementsByTagName( 'img' );
 
-			$msg.find( 'img' ).each(function() {
-				$(this).attr('src', 
-					self.getSmilePath( $(this) )
-				);
-			});
+				if ($img !== null) {
+					for (var j = 0, len2 = $img.length; j < len2; j++) {
+						$img[j].setAttribute('src', self.getSmilePath( $img[j] ));
+					}
+				}
+			
+				msg = {
+					id: 		self.name +'-'+ el.getAttribute( 'data-timestamp' ),
+					author: 	$author.innerHTML,
+					text: 		$text.innerHTML,
+					source: 	self.name,
+					type: 		1,
+				};
 
-			msg = {
-				id: 	self.name +'-'+ $(this).attr('data-timestamp'),
-				author: $(this).find('.user .nick').html(),
-				msg: 	$msg.html(),
-				source: self.name,
-				type: 	1,
-			};
-
-			if (! storage.isMessageExist( msg )) arr.push( msg );
-		});
-
-		return arr;
+				if (! storage.isMessageExist( msg )) arr.push( msg );
+			}
+		}
+		
+		if (arr.length) 
+			storage.save( this.name, arr);
+			
+		this.pm.end( 'handleMessages' );
+		this.pm.print();
 	};
 
 	this.init = function () {
+		this.pm = new PM( $('#login') );
+
+		var obs = wChatObserver({
+			chatSelector: 	'.chat-section',
+			messageClass: 	'message-block',
+			callback: 		self.handleMessages.bind( self )
+		});
+
 		storage.save( self.name, [{
 			id: 	'GG_INIT',
 			author: 'PekaChat',
-			msg: 	'<i class="fa fa-check"></i> GoodGame.ru инициализирован.',
+			text: 	'<i class="fa fa-check"></i> GoodGame.ru инициализирован.',
 			source: self.name,
 			type: 	0
 		}]);
-		
-		setInterval(function(){
-			storage.save( self.name, self.getNewMessages() );
-		}, config.UPDATE_INTERVAL);
 	};
 	
 	this.init();

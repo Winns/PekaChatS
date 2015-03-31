@@ -8,33 +8,38 @@ var ChatTwitch = function ( config, storage ) {
 		msgs: '.chat-line',
 	};
 
-	this.getNewMessages = function () {
-		//var $temp = this.el.$chat.find( this.el.msgs );
-		//if (! $temp.length) return [];
+	this.handleMessages = function ( $messages ) {
+		this.pm.begin( 'handleMessages' );
 		
 		var arr 		= [],
-			$messages 	= this.el.$chat.find( this.el.msgs ).slice( -config.MSG_TO_PARSE ),
-			$msg		= null,
-			msg			= null;
-		
-		$messages.each(function() {
-			$msg = $(this).find( '.message' );
+			msg			= null,
+			$text		= null,
+			$author		= null;
 			
-			if ($msg.length) {
+	
+		for (var i = 0, el, len = $messages.length; i < len; i++) {
+			el 		= $messages[i];
+			$text 	= el.querySelector( '.message' );
+			$author = el.querySelector( '.from' );
+			
+			if ($author !== null && $text !== null) {
 				msg = {
-					//id: 	self.name +'-'+ $(this).prop('id').match(/ember([0-9]+)/)[1],
-					id: 	self.name +'-'+ $(this).prop('id'),
-					author: $(this).find( '.from' ).html(),
-					msg: 	$msg.html(),
-					source: self.name,
+					id: 	this.name +'-'+ el.id,
+					author: $author.innerHTML,
+					text: 	$text.innerHTML,
+					source: this.name,
 					type: 	1
 				};
 				
 				if (! storage.isMessageExist( msg )) arr.push( msg );
 			}
-		});
-
-		return arr;
+		}
+		
+		if (arr.length) 
+			storage.save( this.name, arr);
+			
+		this.pm.end( 'handleMessages' );
+		this.pm.print();
 	};
 	
 	this.isEnable = function() {
@@ -44,17 +49,21 @@ var ChatTwitch = function ( config, storage ) {
 	this.init = function () {
 		if (! this.isEnable()) return;
 		
+		this.pm = new PM( $('.room-title') );
+		
+		var obs = wChatObserver({
+			chatSelector: 	'.chat-room .chat-lines',
+			messageClass: 	'chat-line',
+			callback: 		this.handleMessages.bind( this )
+		});
+		
 		storage.save( self.name, [{
 			id: 	'TWITCH_INIT',
 			author: 'PekaChat',
-			msg: 	'<i class="fa fa-check"></i> Twitch.com инициализирован.',
+			text: 	'<i class="fa fa-check"></i> Twitch.com инициализирован.',
 			source: self.name,
 			type: 	0
 		}]);
-		
-		setInterval(function(){
-			storage.save( self.name, self.getNewMessages() );
-		}, config.UPDATE_INTERVAL);
 	};
 	
 	this.init();
