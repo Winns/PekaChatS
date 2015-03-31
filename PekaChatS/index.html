@@ -31,11 +31,8 @@
 		<div class="peka-bottombar">Bottom bar</div>
 	</div>
 	
-	<!---------- Chats ----------->
-	<iframe src="http://goodgame.ru/chat2/Pomi?pekachat"></iframe>
-	<iframe src="http://chat.sc2tv.ru/index.htm?channelId=158106&pekachat"></iframe>
-	<iframe src="http://www.twitch.tv/starladder_cs_en/chat?pekachat=76"></iframe>
-	<iframe src="http://cybergame.tv/cgchat.htm?v=b&pekachat=1#eddynerv_tv"></iframe>
+	<!---------- User chats ----------->
+	<ul id="iframes"></ul>
 	
 	<!---------- JS ----------->
 	<script src="js/libs/jquery.js"></script>
@@ -45,10 +42,17 @@
 	<script src="js/modules/render.module.js"></script>
 	<script src="js/modules/pekacounter.module.js"></script>
 	<script>
-	var pekaChatModules = [
-		{name: 'Render'},
-		{name: 'PekaCounter', config: '12345'}
-	];
+	var pekaChatSetup = {
+		chatList: [
+			{ name: 'gg', 			id: 'Abver' },
+			{ name: 'sc2tv', 		id: '0' },
+			{ name: 'twitch', 		id: 'totalbiscuit' },
+		],
+		modules: [
+			{name: 'Render'},
+			{name: 'PekaCounter', config: '12345'}
+		]
+	};
 	</script>
 	
 </body>
